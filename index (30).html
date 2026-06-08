@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YFH51KYKH9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YFH51KYKH9');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gigalizzati — Sempre in Rete · Wind Tre Vasto</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{font-family:'Barlow',sans-serif;background:#0d0d0d;color:#fff;overflow-x:hidden;min-height:100%}
+:root{--orange:#E8541E;--orange-dark:#C43D0A}
+
+/* ══ MOBILE (default) ══ */
+.mob-header{position:fixed;top:0;left:0;right:0;height:48px;background:rgba(13,13,13,.96);border-bottom:1px solid rgba(232,84,30,.3);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.mob-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;letter-spacing:-.01em;text-transform:uppercase;background:linear-gradient(180deg,#FFD9C2 0%,var(--orange) 60%,var(--orange-dark) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 0 12px rgba(232,84,30,.5))}
+.mob-logo em{font-style:normal;-webkit-text-fill-color:rgba(255,255,255,.5);font-size:.88rem;font-weight:700;letter-spacing:.06em}
+
+/* Mobile: video in normal flow, height = full viewport minus header */
+.mob-video-wrap{
+  position:relative;
+  width:100%;
+  height:calc(100dvh - 48px);
+  margin-top:48px;
+  background:#000;
+  overflow:hidden;
+}
+
+#vaVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+
+#vaPlayScreen{position:absolute;inset:0;background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;text-align:center;z-index:20}
+.ps-avatar{width:76px;height:76px;border-radius:50%;border:2.5px solid var(--orange);box-shadow:0 0 20px rgba(232,84,30,.4);overflow:hidden;margin-bottom:13px;flex-shrink:0}
+.ps-avatar img{width:100%;height:100%;object-fit:cover;object-position:top}
+.ps-name{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:5px}
+.ps-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.35rem;text-transform:uppercase;color:#fff;line-height:1.1;margin-bottom:8px}
+.ps-sub{font-size:.76rem;color:rgba(255,255,255,.42);line-height:1.5;margin-bottom:22px;max-width:200px}
+.ps-play-btn{width:66px;height:66px;border-radius:50%;background:var(--orange);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(232,84,30,.55);margin-bottom:12px;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.ps-hint{font-size:.68rem;color:rgba(255,255,255,.28);letter-spacing:.04em}
+
+#vaMuteOverlay{position:absolute;inset:0;background:rgba(0,0,0,.5);border:none;cursor:pointer;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:18}
+#vaMuteOverlay span{color:#fff;font-size:.82rem;font-weight:700}
+#vaPausedOverlay{position:absolute;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;pointer-events:none;z-index:9}
+.va-click-block{position:absolute;top:0;left:0;right:0;bottom:40%;z-index:8;cursor:pointer}
+
+#vaHud{position:absolute;top:10px;left:12px;right:12px;display:flex;align-items:center;justify-content:space-between;z-index:25;pointer-events:none}
+#vaStepLabel{background:rgba(0,0,0,.75);color:rgba(255,255,255,.85);font-size:.58rem;font-weight:700;padding:4px 10px;border-radius:5px;letter-spacing:.1em;text-transform:uppercase}
+#vaBackBtn{background:rgba(0,0,0,.8);border:none;color:#fff;font-size:.7rem;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer;pointer-events:auto;display:none;font-family:'Barlow',sans-serif}
+#vaPauseBtn{position:absolute;bottom:calc(var(--ph,180px) + 10px);left:12px;background:rgba(0,0,0,.7);border:1.5px solid rgba(255,255,255,.2);border-radius:50%;width:34px;height:34px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:25;-webkit-tap-highlight-color:transparent}
+#vaProgress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.1);z-index:26}
+#vaProgressBar{height:100%;background:var(--orange);width:0%;transition:width .15s linear}
+
+/* Panel overlay mobile */
+.va-panel{position:absolute;bottom:0;left:0;right:0;z-index:22;background:linear-gradient(transparent,rgba(0,0,0,.94) 26%);padding:50px 14px 28px;max-height:62%;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:0}
+
+/* Shared button/form/result styles */
+#vaBtns,#vaBtnsD{display:none;flex-direction:column;gap:8px}
+.va-q-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;text-transform:uppercase;color:#fff;margin-bottom:2px;letter-spacing:.02em}
+.va-q-sub{font-size:.72rem;color:rgba(255,255,255,.38);margin-bottom:9px}
+.va-btn{background:rgba(15,15,15,.88);border:1.5px solid rgba(255,255,255,.13);border-radius:11px;padding:12px 14px;color:#fff;font-size:.9rem;font-weight:600;font-family:'Barlow',sans-serif;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:border-color .18s,background .18s;width:100%}
+.va-btn:active{border-color:var(--orange);background:rgba(232,84,30,.15)}
+.va-btn-num{width:23px;height:23px;border-radius:50%;background:rgba(232,84,30,.2);border:1.5px solid rgba(232,84,30,.5);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:900;color:var(--orange);flex-shrink:0}
+
+#vaForm,#vaFormD{display:none;flex-direction:column;gap:9px}
+.va-form-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;text-transform:uppercase;color:#fff;margin-bottom:1px}
+.va-form-sub{font-size:.74rem;color:rgba(255,255,255,.42);margin-bottom:4px}
+.va-input{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.14);border-radius:10px;padding:11px 13px;color:#fff;font-size:.9rem;font-family:'Barlow',sans-serif;outline:none;width:100%;-webkit-appearance:none}
+.va-input:focus{border-color:var(--orange)}
+.va-select{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.14);border-radius:10px;padding:11px 13px;color:#fff;font-size:.9rem;font-family:'Barlow',sans-serif;outline:none;width:100%;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffffff60' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+.va-select:focus{border-color:var(--orange)}
+.va-select option{background:#1a1a1a}
+.va-submit-btn{background:rgba(232,84,30,.25);color:rgba(255,255,255,.35);border:none;padding:13px;border-radius:10px;font-size:.92rem;font-weight:700;font-family:'Barlow',sans-serif;cursor:not-allowed;transition:all .2s;width:100%}
+
+#vaResult,#vaResultD{display:none;flex-direction:column;align-items:center;text-align:center}
+.va-result-offer{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;text-transform:uppercase;color:var(--orange);line-height:1;margin-bottom:4px}
+.va-result-desc{font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:12px}
+.va-andrea-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border-radius:10px;padding:10px 12px;margin-bottom:11px;border:1px solid rgba(255,255,255,.08);text-align:left;width:100%}
+.va-andrea-row img{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid var(--orange);flex-shrink:0}
+.va-wa-btn{display:flex;align-items:center;justify-content:center;gap:9px;background:#25D366;color:#fff;text-decoration:none;font-weight:700;font-size:.92rem;padding:14px;border-radius:10px;margin-bottom:7px;width:100%}
+.va-call-btn{display:flex;align-items:center;justify-content:center;gap:9px;background:rgba(255,255,255,.07);color:#fff;text-decoration:none;font-weight:600;font-size:.82rem;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,.12);margin-bottom:10px;width:100%}
+.va-reset-btn{background:none;border:none;color:rgba(255,255,255,.22);font-size:.7rem;cursor:pointer;text-decoration:underline;font-family:'Barlow',sans-serif}
+
+/* ══ DESKTOP (≥900px) ══ */
+@media(min-width:900px){
+  body{overflow-x:hidden}
+  .mob-header{display:none}
+  .mob-video-wrap{position:relative;top:auto;left:auto;right:auto;bottom:auto;width:100%;height:100vh;flex-shrink:0;border-left:2px solid rgba(232,84,30,.25);border-right:2px solid rgba(232,84,30,.25);box-shadow:0 0 80px rgba(232,84,30,.3)}
+  .va-panel{display:none !important}
+  .desk-layout{display:grid;grid-template-columns:1fr calc(100vh * 9/16) 1fr;height:100vh}
+  .desk-left,.desk-right{display:flex;flex-direction:column;overflow-y:auto}
+  .desk-left{padding:32px 24px 32px 28px;background:linear-gradient(160deg,#111 0%,#0d0d0d 100%);border-right:1px solid rgba(255,255,255,.05)}
+  .desk-right{padding:32px 28px 32px 24px;background:linear-gradient(200deg,#111 0%,#0d0d0d 100%);justify-content:flex-start}
+  .va-panel-desk{display:flex;flex-direction:column;gap:9px}
+  .va-btn{background:rgba(255,255,255,.05)}
+}
+
+/* Desktop left content */
+.desk-left,.desk-right{display:none}
+@media(min-width:900px){.desk-left,.desk-right{display:flex}}
+
+.desk-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(232,84,30,.12);border:1px solid rgba(232,84,30,.35);color:var(--orange);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:4px;margin-bottom:20px}
+.desk-tag::before{content:'';width:6px;height:6px;background:var(--orange);border-radius:50%;animation:pulse-dot 1.5s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.desk-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(3.5rem,5vw,6rem);letter-spacing:-.02em;text-transform:uppercase;line-height:.88;background:linear-gradient(180deg,#FFE0CC 0%,#FF6B35 40%,var(--orange) 70%,var(--orange-dark) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 4px 28px rgba(232,84,30,.7));margin-bottom:4px;animation:giga-glow 2.2s ease-in-out infinite}
+.desk-sub{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(.9rem,1.3vw,1.2rem);text-transform:uppercase;color:rgba(255,255,255,.6);letter-spacing:.05em;margin-bottom:22px}
+.desk-sub span{color:var(--orange)}
+.desk-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px}
+.desk-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 8px;text-align:center}
+.desk-stat-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.7rem;color:var(--orange);line-height:1;margin-bottom:4px}
+.desk-stat-label{font-size:.63rem;color:rgba(255,255,255,.42);line-height:1.4}
+.desk-section-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1rem;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:10px;letter-spacing:.04em}
+.desk-cards{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+.desk-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px 14px;display:flex;gap:11px;align-items:flex-start}
+.desk-card-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;color:rgba(232,84,30,.45);flex-shrink:0;min-width:22px;line-height:1;margin-top:1px}
+.desk-card h4{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:3px;line-height:1.3}
+.desk-card p{font-size:.72rem;color:rgba(255,255,255,.42);line-height:1.5}
+.desk-card .fact{font-size:.68rem;color:var(--orange);margin-top:4px;font-weight:600}
+.desk-andrea{display:flex;align-items:center;gap:13px;background:rgba(232,84,30,.08);border:1px solid rgba(232,84,30,.2);border-radius:12px;padding:14px;margin-top:auto;padding-top:16px}
+.desk-andrea img{width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:top;border:2.5px solid var(--orange);flex-shrink:0}
+.desk-andrea-name{font-weight:700;font-size:.88rem;color:#fff;margin-bottom:2px}
+.desk-andrea-role{font-size:.7rem;color:rgba(255,255,255,.4);line-height:1.45}
+
+/* Desktop right */
+.desk-right-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(2rem,2.8vw,3rem);letter-spacing:-.01em;text-transform:uppercase;background:linear-gradient(180deg,#FFD9C2 0%,var(--orange) 55%,var(--orange-dark) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 16px rgba(232,84,30,.45));margin-bottom:4px}
+.desk-right-sub{font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:20px;line-height:1.6}
+.desk-testis{display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:16px}
+.desk-testi{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 13px}
+.desk-testi-text{font-size:.73rem;color:rgba(255,255,255,.55);font-style:italic;line-height:1.55;margin-bottom:7px}
+.desk-testi-author{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.3)}
+.desk-stars{color:#F59E0B;font-size:.62rem;margin-bottom:3px}
+
+@keyframes giga-glow{0%,100%{filter:drop-shadow(0 4px 28px rgba(232,84,30,.7))}50%{filter:drop-shadow(0 4px 50px rgba(232,84,30,1)) drop-shadow(0 0 80px rgba(255,107,53,.5))}}
+
+/* Floating quiz button */
+.floating-quiz{position:fixed;bottom:24px;right:20px;z-index:9999;display:none;animation:float-in .4s ease}
+.floating-quiz.visible{display:flex}
+.floating-quiz-btn{display:flex;align-items:center;gap:9px;background:var(--orange);color:white;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1rem;letter-spacing:.04em;text-transform:uppercase;padding:13px 20px;border-radius:50px;box-shadow:0 6px 30px rgba(232,84,30,.6);transition:transform .2s;animation:quiz-pulse 1.3s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+.floating-quiz-btn:active{transform:scale(.96)}
+@keyframes float-in{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes quiz-pulse{0%,100%{box-shadow:0 6px 30px rgba(232,84,30,.6)}50%{box-shadow:0 6px 44px rgba(232,84,30,1)}}
+
+/* ══ SCROLLABLE LANDING BELOW VIDEO ══ */
+:root{
+  --light:#F5F3F0;--white:#FFFFFF;--dark:#1A1A1A;--dark-2:#2D2D2D;--mid:#5A5A5A;--border:#E8E4DF;
+  --font-display:'Barlow Condensed',sans-serif;--font-body:'Barlow',sans-serif;
+}
+.landing-content{background:var(--white);color:var(--dark)}
+/* Spacer not needed - video is normal flow now */
+.mob-spacer{display:none}
+
+/* Proof bar */
+.proof-bar{background:var(--dark);padding:16px 0;overflow:hidden;position:relative}
+.proof-bar::before,.proof-bar::after{content:'';position:absolute;top:0;width:100px;height:100%;z-index:2}
+.proof-bar::before{left:0;background:linear-gradient(to right,var(--dark),transparent)}
+.proof-bar::after{right:0;background:linear-gradient(to left,var(--dark),transparent)}
+.proof-track{display:flex;white-space:nowrap;animation:scroll-left 28s linear infinite;width:max-content}
+@keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.proof-item{display:inline-flex;align-items:center;gap:12px;padding:0 32px;font-family:var(--font-display);font-weight:700;font-size:.88rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.proof-item .dot{width:5px;height:5px;background:var(--orange);border-radius:50%;flex-shrink:0}
+
+/* Sections */
+.lc-section{padding:80px 5%}
+.lc-tag{display:inline-block;font-weight:700;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);margin-bottom:16px}
+.lc-title{font-family:var(--font-display);font-weight:900;font-size:clamp(1.8rem,3.5vw,3rem);line-height:1.05;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:18px}
+.lc-sub{font-size:1rem;color:var(--mid);line-height:1.7;max-width:560px;margin-bottom:44px}
+
+/* Problema */
+.lc-problema{background:var(--light)}
+.drama-box{max-width:1100px;margin:0 auto 50px;background:var(--dark);border-radius:14px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
+.drama-col{padding:44px 40px}
+.drama-col.bad{background:var(--dark-2);border-right:2px solid var(--orange)}
+.drama-label{font-family:var(--font-display);font-weight:900;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.drama-col.bad .drama-label{color:rgba(255,255,255,.4)}
+.drama-col.good .drama-label{color:var(--orange)}
+.drama-scenario{font-size:.98rem;color:rgba(255,255,255,.75);line-height:1.7}
+.drama-scenario strong{color:white}
+.drama-highlight{margin-top:18px;font-family:var(--font-display);font-weight:900;font-size:1.8rem;line-height:1.1}
+.drama-col.bad .drama-highlight{color:rgba(255,255,255,.3)}
+.drama-col.good .drama-highlight{color:var(--orange)}
+.problem-cards{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.problem-card{background:var(--white);border-radius:12px;padding:32px 28px;border:1px solid var(--border);border-top:4px solid var(--orange)}
+.problem-card-num{font-family:var(--font-display);font-weight:900;font-size:2.8rem;color:rgba(232,84,30,.12);line-height:1;margin-bottom:14px}
+.problem-card h3{font-family:var(--font-display);font-weight:800;font-size:1.1rem;text-transform:uppercase;margin-bottom:10px}
+.problem-card p{font-size:.9rem;color:var(--mid);line-height:1.65}
+.problem-card .fact{margin-top:16px;padding:10px 14px;background:var(--light);border-radius:7px;font-size:.82rem;font-weight:700;color:var(--orange)}
+
+/* Soluzione */
+.lc-soluzione{background:var(--white)}
+.soluzione-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:start}
+.soluzione-features{display:flex;flex-direction:column;gap:24px;margin-top:28px}
+.feature-row{display:flex;gap:18px;align-items:flex-start}
+.feature-num{font-family:var(--font-display);font-weight:900;font-size:2.2rem;color:var(--orange);line-height:1;flex-shrink:0;width:44px}
+.feature-content h4{font-family:var(--font-display);font-weight:800;font-size:1rem;text-transform:uppercase;margin-bottom:5px}
+.feature-content p{font-size:.9rem;color:var(--mid);line-height:1.6}
+.soluzione-img{border-radius:14px;overflow:hidden;margin-bottom:24px}
+.soluzione-img img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.value-card{background:var(--dark);border-radius:14px;padding:32px 28px;color:white}
+.value-card-title{font-family:var(--font-display);font-weight:900;font-size:1.3rem;text-transform:uppercase;margin-bottom:5px;color:var(--orange)}
+.value-card-sub{font-size:.85rem;color:rgba(255,255,255,.55);margin-bottom:22px}
+.value-card ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.value-card ul li{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;color:rgba(255,255,255,.82);line-height:1.45}
+.value-card ul li::before{content:'✓';color:var(--orange);font-weight:800;flex-shrink:0;margin-top:1px}
+.value-card .guarantee{font-size:.75rem;color:rgba(255,255,255,.4);text-align:center;line-height:1.5;margin-top:12px}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--orange);color:white;text-decoration:none;font-weight:700;font-size:.98rem;padding:15px 26px;border-radius:7px;transition:background .2s,transform .2s;box-shadow:0 4px 20px rgba(232,84,30,.4);justify-content:center;width:100%}
+.btn-primary:active{background:var(--orange-dark)}
+
+/* Come funziona */
+.lc-come-funziona{background:var(--dark);padding:80px 5%}
+.lc-come-funziona .lc-title{color:white}
+.lc-come-funziona .lc-sub{color:rgba(255,255,255,.6)}
+.steps-wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
+.step-item{background:var(--dark);padding:44px 36px;position:relative}
+.step-num{font-family:var(--font-display);font-weight:900;font-size:4.5rem;color:rgba(232,84,30,.15);line-height:1;position:absolute;top:24px;right:24px}
+.step-icon{font-size:2rem;margin-bottom:18px;display:block}
+.step-title{font-family:var(--font-display);font-weight:800;font-size:1.15rem;text-transform:uppercase;color:white;margin-bottom:10px}
+.step-desc{font-size:.9rem;color:rgba(255,255,255,.6);line-height:1.65}
+
+/* Testimonianze */
+.lc-testi{background:var(--light)}
+.testi-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.testi-card{background:var(--white);border-radius:12px;padding:32px 28px;border:1px solid var(--border);display:flex;flex-direction:column;gap:18px}
+.testi-stars{display:flex;gap:3px;color:#F59E0B;font-size:.95rem}
+.testi-text{font-size:.95rem;color:var(--dark);line-height:1.7;flex:1;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:12px;border-top:1px solid var(--border);padding-top:18px}
+.testi-avatar{width:42px;height:42px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:white;flex-shrink:0}
+.testi-name{font-weight:700;font-size:.88rem;color:var(--dark);margin-bottom:2px}
+.testi-meta{font-size:.75rem;color:var(--mid)}
+
+/* FAQ */
+.lc-faq{background:var(--white)}
+.faq-wrap{max-width:780px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{width:100%;background:none;border:none;padding:22px 0;display:flex;justify-content:space-between;align-items:center;gap:18px;cursor:pointer;text-align:left;font-family:var(--font-body);font-weight:700;font-size:.98rem;color:var(--dark);transition:color .2s}
+.faq-q:hover,.faq-q.open{color:var(--orange)}
+.faq-icon{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;transition:border-color .2s,transform .3s;color:var(--mid)}
+.faq-q.open .faq-icon{border-color:var(--orange);color:var(--orange);transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease;font-size:.94rem;color:var(--mid);line-height:1.7}
+.faq-a.open{max-height:300px;padding-bottom:22px}
+
+/* CTA finale */
+.lc-cta{background:var(--dark);padding:90px 5%;text-align:center;position:relative;overflow:hidden}
+.lc-cta .lc-title{color:white;font-size:clamp(2.2rem,4vw,3.8rem);margin-bottom:18px}
+.lc-cta-sub{font-size:1.02rem;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:44px;max-width:600px;margin-left:auto;margin-right:auto}
+.cta-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:36px}
+.btn-wa{display:inline-flex;align-items:center;gap:12px;background:#25D366;color:white;text-decoration:none;font-weight:700;font-size:1.05rem;padding:18px 32px;border-radius:10px;transition:background .2s;box-shadow:0 6px 30px rgba(37,211,102,.35)}
+.btn-call{display:inline-flex;align-items:center;gap:12px;background:var(--orange);color:white;text-decoration:none;font-weight:700;font-size:1.05rem;padding:18px 32px;border-radius:10px;box-shadow:0 6px 30px rgba(232,84,30,.35)}
+.cta-reassure{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 22px}
+.reassure-item{display:flex;align-items:center;gap:6px;font-size:.8rem;color:rgba(255,255,255,.5);font-weight:500}
+.reassure-item::before{content:'✓';color:var(--orange)}
+
+/* Footer */
+.lc-footer{background:#111;padding:50px 5% 28px;border-top:2px solid rgba(255,255,255,.06)}
+.footer-top{display:grid;grid-template-columns:1fr 1fr;gap:50px;margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.08)}
+.footer-brand-name{font-family:var(--font-display);font-weight:900;font-size:1.7rem;text-transform:uppercase;color:white;margin-bottom:7px}
+.footer-brand-name span{color:var(--orange)}
+.footer-payoff{font-size:.88rem;color:rgba(255,255,255,.45);line-height:1.5;max-width:300px;margin-bottom:14px}
+.footer-info h4{font-family:var(--font-display);font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-bottom:18px}
+.footer-info ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.footer-info ul li{display:flex;gap:9px;font-size:.85rem;color:rgba(255,255,255,.6);align-items:flex-start;line-height:1.4}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-copy{font-size:.76rem;color:rgba(255,255,255,.3)}
+.footer-links{display:flex;gap:18px}
+.footer-links a{font-size:.76rem;color:rgba(255,255,255,.3);text-decoration:none}
+
+/* Luce e Gas */
+.lc-lucegas{background:var(--dark)}
+.lc-lucegas .lc-title{color:white}
+.lc-lucegas .lc-sub{color:rgba(255,255,255,.6)}
+.lg-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+@media(max-width:900px){.lg-inner{grid-template-columns:1fr}}
+.lg-saving-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:32px 28px;margin-bottom:24px}
+.lg-saving-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:3.2rem;color:#4ECDC4;line-height:1;margin-bottom:7px}
+.lg-saving-label{font-size:.9rem;color:rgba(255,255,255,.6);line-height:1.5}
+.lg-benefits{display:flex;flex-direction:column;gap:14px}
+.lg-benefit{display:flex;gap:14px;align-items:flex-start}
+.lg-benefit-icon{width:38px;height:38px;border-radius:50%;background:rgba(78,205,196,.15);border:1px solid rgba(78,205,196,.3);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.lg-benefit-content h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.95rem;text-transform:uppercase;color:white;margin-bottom:3px}
+.lg-benefit-content p{font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.5}
+.lg-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:28px;margin-bottom:18px}
+.lg-card-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;text-transform:uppercase;color:#4ECDC4;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.lg-card ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.lg-card ul li{display:flex;gap:9px;font-size:.85rem;color:rgba(255,255,255,.72);line-height:1.45;align-items:flex-start}
+.lg-card ul li::before{content:'✓';color:#4ECDC4;font-weight:800;flex-shrink:0;margin-top:1px}
+.lg-cta-btn{display:flex;align-items:center;justify-content:center;gap:9px;background:#4ECDC4;color:#0A3D3A;text-decoration:none;font-weight:700;font-size:.95rem;padding:15px 24px;border-radius:8px;transition:background .2s;width:100%;margin-top:6px}
+.lg-note{font-size:.74rem;color:rgba(255,255,255,.3);text-align:center;margin-top:8px;line-height:1.5}
+
+/* Quiz CTA banner */
+.quiz-cta-banner{background:linear-gradient(135deg,rgba(232,84,30,.12),rgba(232,84,30,.05));border:1px solid rgba(232,84,30,.25);border-radius:14px;padding:28px 32px;text-align:center;max-width:700px;margin:0 auto}
+.quiz-cta-banner p{font-size:.95rem;color:rgba(0,0,0,.65);line-height:1.6;margin-bottom:18px}
+.quiz-cta-banner .lc-tag{display:block;margin-bottom:8px}
+.btn-quiz{display:inline-flex;align-items:center;gap:10px;background:var(--orange);color:white;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.15rem;letter-spacing:.04em;text-transform:uppercase;padding:16px 28px;border-radius:8px;box-shadow:0 4px 22px rgba(232,84,30,.45);animation:quiz-pulse 1.3s ease-in-out infinite}
+@keyframes va-pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+/* RESPONSIVE sezioni */
+@media(max-width:900px){
+  .drama-box{grid-template-columns:1fr}
+  .drama-col.bad{border-right:none;border-bottom:2px solid var(--orange)}
+  .problem-cards,.testi-grid{grid-template-columns:1fr}
+  .soluzione-inner{grid-template-columns:1fr}
+  .steps-wrap{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr;gap:36px}
+  .cta-buttons{flex-direction:column;align-items:center}
+  .lc-section{padding:60px 5%}
+}
+</style>
+</head>
+<body>
+
+<!-- MOBILE HEADER -->
+<div class="mob-header">
+  <div class="mob-logo">GIGALIZZATI <em>· Wind Tre Vasto</em></div>
+</div>
+
+<!-- DESKTOP GRID -->
+<div class="desk-layout">
+
+<!-- COLONNA SINISTRA desktop -->
+<div class="desk-left">
+  <div class="desk-tag">Partner ufficiale Wind Tre · Vasto (CH)</div>
+  <div class="desk-logo">GIGALIZZATI</div>
+  <div class="desk-sub">in <span>3 minuti</span> — Wind Tre Vasto</div>
+  <div class="desk-stats">
+    <div class="desk-stat"><div class="desk-stat-num">+320</div><div class="desk-stat-label">Clienti soddisfatti quest'anno</div></div>
+    <div class="desk-stat"><div class="desk-stat-num">10'</div><div class="desk-stat-label">Attivazione SIM in negozio</div></div>
+    <div class="desk-stat"><div class="desk-stat-num">8+</div><div class="desk-stat-label">Anni come agente Wind Tre</div></div>
+  </div>
+  <div class="desk-section-title">Perché i call center non bastano</div>
+  <div class="desk-cards">
+    <div class="desk-card"><div class="desk-card-num">01</div><div><h4>Stai pagando troppo da anni</h4><p>Il tuo operatore ha aumentato le tariffe silenziosamente. Intanto paghi fino a 15€ in più ogni mese.</p><div class="fact">→ Il rincaro medio non comunicato è 8-15€/mese</div></div></div>
+    <div class="desk-card"><div class="desk-card-num">02</div><div><h4>La portabilità ti spaventa</h4><p>Hai sentito storie di chi è rimasto senza linea per giorni. La paura ti blocca.</p><div class="fact">→ Con Wind Tre avviene in poche ore, in automatico</div></div></div>
+    <div class="desk-card"><div class="desk-card-num">03</div><div><h4>Non sai mai cosa firmi</h4><p>Il call center ti legge solo il prezzo promo. Poi scopri costi nascosti e vincoli.</p><div class="fact">→ Da noi ogni voce viene spiegata prima di firmare</div></div></div>
+  </div>
+  <div class="desk-andrea">
+    <img src="https://i.imgur.com/e81fwRr.jpeg" alt="Andrea">
+    <div>
+      <div class="desk-andrea-name">Andrea Di Domenico</div>
+      <div class="desk-andrea-role">Partner Wind Tre · Corso Mazzini 196, Vasto<br>📞 +39 393 123 0333 · Lun-Sab 9:30-13 / 16:30-20</div>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO (centro) -->
+<div class="mob-video-wrap">
+  <video id="vaVideo" src="https://res.cloudinary.com/dzvhd4tp3/video/upload/v1778755774/andrea_by5e8x.mp4" muted autoplay playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
+
+  <div id="vaPlayScreen">
+    <div class="ps-avatar"><img src="https://i.imgur.com/e81fwRr.jpeg" alt="Andrea"></div>
+    <div class="ps-name">Ciao! Sono Andrea</div>
+    <div class="ps-title">Troviamo l'offerta<br>giusta in 3 minuti</div>
+    <div class="ps-sub">Guarda i miei video e rispondi con un tap.</div>
+    <button class="ps-play-btn" onclick="vaStartPlayer()"><svg width="26" height="26" viewBox="0 0 24 24" fill="white" style="margin-left:3px"><path d="M8 5v14l11-7z"/></svg></button>
+    <div class="ps-hint">Tocca per iniziare · Audio attivo</div>
+  </div>
+
+  <button id="vaMuteOverlay" onclick="vaUnmute()">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="white" style="opacity:.9"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+    <span>Tocca per attivare il suono</span>
+  </button>
+
+  <div id="vaPausedOverlay"><div style="width:58px;height:58px;border-radius:50%;background:rgba(232,84,30,.9);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="white" style="margin-left:3px"><path d="M8 5v14l11-7z"/></svg></div></div>
+  <div class="va-click-block" onclick="vaTogglePlay()"></div>
+  <div id="vaHud"><button id="vaBackBtn" onclick="vaBack()">← Indietro</button><div id="vaStepLabel"></div></div>
+  <button id="vaPauseBtn" onclick="vaTogglePlay()"><svg id="vaPauseIcon" width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button>
+  <div id="vaProgress"><div id="vaProgressBar"></div></div>
+
+  <!-- PANEL MOBILE -->
+  <div class="va-panel">
+    <div id="vaBtns"></div>
+    <div id="vaForm">
+      <div class="va-form-title">Prima di continuare…</div>
+      <div class="va-form-sub">Così Andrea sa già chi sei quando ti risponde.</div>
+      <input id="vaName" class="va-input" type="text" placeholder="Il tuo nome..." maxlength="40" autocomplete="given-name" oninput="vaCheckForm()">
+      <input id="vaPhone" class="va-input" type="tel" placeholder="Numero di telefono..." maxlength="15" autocomplete="tel" oninput="vaCheckForm()">
+      <select id="vaZona" class="va-select" onchange="vaOnZonaChange()"><option value="">Dove sei?</option><option value="Vasto">Vasto</option><option value="San Salvo">San Salvo</option><option value="Cupello">Cupello</option><option value="Casalbordino">Casalbordino</option><option value="Lanciano">Lanciano</option><option value="Vasto Marina">Vasto Marina</option><option value="__altro">Altro…</option></select>
+      <input id="vaZonaAltro" class="va-input" type="text" placeholder="Indica la tua zona..." maxlength="40" oninput="vaCheckForm()" style="display:none">
+      <button id="vaFormBtn" class="va-submit-btn" onclick="vaSubmitForm()" disabled>Avanti →</button>
+    </div>
+    <div id="vaResult">
+      <div style="font-size:1.7rem;margin-bottom:7px;animation:va-pop .5s ease">⚡</div>
+      <div id="vaResultGreeting" style="font-size:.82rem;color:rgba(255,255,255,.7);margin-bottom:5px;line-height:1.5"></div>
+      <div id="vaResultOffer" class="va-result-offer"></div>
+      <div id="vaResultDesc" class="va-result-desc"></div>
+      <div class="va-andrea-row"><img src="https://i.imgur.com/e81fwRr.jpeg" alt="Andrea"><div><div style="font-weight:700;font-size:.8rem;color:#fff;margin-bottom:2px">Andrea ti contatterà presto 👋</div><div style="font-size:.7rem;color:rgba(255,255,255,.42)">Ha già le tue risposte — ti scrive su WhatsApp.</div></div></div>
+      <a id="vaWaBtn" href="https://wa.me/393931230333" target="_blank" class="va-wa-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.557 4.125 1.529 5.858L.057 23.944l6.255-1.639A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>Scrivimi su WhatsApp</a>
+      <a href="tel:+393931230333" class="va-call-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>Oppure chiama ora</a>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(232,84,30,.45);margin-bottom:8px">⚡ Sei Gigalizzato.</div>
+      <button class="va-reset-btn" onclick="vaReset()">↩ Ricomincia</button>
+    </div>
+  </div>
+</div>
+
+<!-- COLONNA DESTRA desktop -->
+<div class="desk-right">
+  <div class="desk-right-logo">LA TUA<br>OFFERTA</div>
+  <div class="desk-right-sub">Guarda il video di Andrea e rispondi con un click.<br>In 3 minuti trovi la soluzione giusta per te.</div>
+  <div class="va-panel-desk" id="vaPanelDesk">
+    <div id="vaBtnsD"></div>
+    <div id="vaFormD">
+      <div class="va-form-title">Prima di continuare…</div>
+      <div class="va-form-sub">Così Andrea sa già chi sei quando ti risponde.</div>
+      <input id="vaNameD" class="va-input" type="text" placeholder="Il tuo nome..." maxlength="40" autocomplete="given-name" oninput="vaCheckFormD()">
+      <input id="vaPhoneD" class="va-input" type="tel" placeholder="Numero di telefono..." maxlength="15" autocomplete="tel" oninput="vaCheckFormD()">
+      <select id="vaZonaD" class="va-select" onchange="vaOnZonaChangeD()"><option value="">Dove sei?</option><option value="Vasto">Vasto</option><option value="San Salvo">San Salvo</option><option value="Cupello">Cupello</option><option value="Casalbordino">Casalbordino</option><option value="Lanciano">Lanciano</option><option value="Vasto Marina">Vasto Marina</option><option value="__altro">Altro…</option></select>
+      <input id="vaZonaAltroD" class="va-input" type="text" placeholder="Indica la tua zona..." maxlength="40" oninput="vaCheckFormD()" style="display:none">
+      <button id="vaFormBtnD" class="va-submit-btn" onclick="vaSubmitFormD()" disabled>Avanti →</button>
+    </div>
+    <div id="vaResultD">
+      <div style="font-size:2rem;margin-bottom:10px;animation:va-pop .5s ease">⚡</div>
+      <div id="vaResultGreetingD" style="font-size:.88rem;color:rgba(255,255,255,.7);margin-bottom:6px;line-height:1.5"></div>
+      <div id="vaResultOfferD" class="va-result-offer" style="font-size:1.9rem;margin-bottom:6px"></div>
+      <div id="vaResultDescD" class="va-result-desc" style="font-size:.82rem;margin-bottom:16px"></div>
+      <div class="va-andrea-row"><img src="https://i.imgur.com/e81fwRr.jpeg" alt="Andrea"><div><div style="font-weight:700;font-size:.85rem;color:#fff;margin-bottom:2px">Andrea ti contatterà presto 👋</div><div style="font-size:.74rem;color:rgba(255,255,255,.42)">Ha già le tue risposte — ti scrive su WhatsApp.</div></div></div>
+      <a href="https://wa.me/393931230333" target="_blank" class="va-wa-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.557 4.125 1.529 5.858L.057 23.944l6.255-1.639A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>Scrivimi su WhatsApp</a>
+      <a href="tel:+393931230333" class="va-call-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>Oppure chiama ora</a>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(232,84,30,.5);margin-bottom:10px">⚡ Sei Gigalizzato.</div>
+      <button class="va-reset-btn" onclick="vaReset()">↩ Ricomincia</button>
+    </div>
+  </div>
+  <div class="desk-testis" id="deskTestis">
+    <div class="desk-section-title" style="margin-top:12px">Cosa dicono i clienti</div>
+    <div class="desk-testi"><div class="desk-stars">★★★★★</div><div class="desk-testi-text">"Pagavo 15€ in più al mese senza motivo. Andrea ha controllato la mia bolletta in 5 minuti e ho cambiato operatore senza perdere il numero."</div><div class="desk-testi-author">Marco R. · Vasto · Cliente da 2 anni</div></div>
+    <div class="desk-testi"><div class="desk-stars">★★★★★</div><div class="desk-testi-text">"Avevo paura di restare senza linea. Invece il giorno dopo avevo già Wind Tre attivo. Andrea mi ha tenuta aggiornata tutto il tempo."</div><div class="desk-testi-author">Giulia F. · San Salvo · Cliente da 1 anno</div></div>
+  </div>
+</div>
+
+</div><!-- /desk-layout -->
+
+<!-- FLOATING QUIZ BUTTON — appare scorrendo -->
+<div class="floating-quiz" id="floatingQuiz">
+  <a href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false" class="floating-quiz-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    ⚡ Compila il quiz
+  </a>
+</div>
+
+<!-- Mobile spacer: spinge il contenuto sotto il video fisso -->
+<div class="mob-spacer"></div>
+
+<!-- ══════════════════════════════════════════
+     LANDING CONTENT (scorrendo sotto il video)
+     ══════════════════════════════════════════ -->
+<div class="landing-content">
+
+<!-- PROOF BAR -->
+<div class="proof-bar">
+  <div class="proof-track">
+    <span class="proof-item"><span class="dot"></span>Attivazione in 10 minuti</span>
+    <span class="proof-item"><span class="dot"></span>Portabilità senza interruzioni</span>
+    <span class="proof-item"><span class="dot"></span>Consulenza gratuita</span>
+    <span class="proof-item"><span class="dot"></span>Partner ufficiale Wind Tre</span>
+    <span class="proof-item"><span class="dot"></span>Assistenza post-vendita</span>
+    <span class="proof-item"><span class="dot"></span>Nessun costo nascosto</span>
+    <span class="proof-item"><span class="dot"></span>Fibra e 5G a Vasto</span>
+    <span class="proof-item"><span class="dot"></span>Luce &amp; Gas inclusi</span>
+    <span class="proof-item"><span class="dot"></span>Attivazione in 10 minuti</span>
+    <span class="proof-item"><span class="dot"></span>Portabilità senza interruzioni</span>
+    <span class="proof-item"><span class="dot"></span>Consulenza gratuita</span>
+    <span class="proof-item"><span class="dot"></span>Partner ufficiale Wind Tre</span>
+    <span class="proof-item"><span class="dot"></span>Assistenza post-vendita</span>
+    <span class="proof-item"><span class="dot"></span>Nessun costo nascosto</span>
+    <span class="proof-item"><span class="dot"></span>Fibra e 5G a Vasto</span>
+    <span class="proof-item"><span class="dot"></span>Luce &amp; Gas inclusi</span>
+  </div>
+</div>
+
+<!-- PROBLEMA -->
+<section class="lc-section lc-problema">
+  <div style="max-width:1100px;margin:0 auto">
+    <span class="lc-tag reveal">Il problema</span>
+    <h2 class="lc-title reveal">I call center ti costano<br>più di quanto pensi</h2>
+    <p class="lc-sub reveal">Non solo in euro, ma in tempo perso, problemi irrisolti e rinnovi automatici che non hai mai chiesto.</p>
+  </div>
+  <div class="drama-box reveal">
+    <div class="drama-col bad">
+      <div class="drama-label">❌ Con il call center</div>
+      <p class="drama-scenario">Aspetti 20 minuti in attesa, ti passano da un operatore all'altro. Ti vendono un'offerta che sembra conveniente, poi scopri <strong>costi nascosti in bolletta</strong>. Quando hai un problema, richiami, aspetti ancora, e ti dicono che "non possono fare nulla".</p>
+      <div class="drama-highlight">Ore perse.<br>Soldi persi.</div>
+    </div>
+    <div class="drama-col good">
+      <div class="drama-label">✓ Con Andrea a Vasto</div>
+      <p class="drama-scenario">Entri in negozio, spieghi la tua situazione in 5 minuti. Andrea valuta la tua offerta attuale e attiva tutto <strong>direttamente davanti a te</strong>. Se hai un dubbio dopo, torni e lo risolvi in 10 minuti.</p>
+      <div class="drama-highlight">Problema risolto.<br>Subito.</div>
+    </div>
+  </div>
+  <div class="problem-cards">
+    <div class="problem-card reveal reveal-delay-1">
+      <div class="problem-card-num">01</div>
+      <h3>Stai pagando troppo<br>da anni</h3>
+      <p>Il tuo operatore ha aumentato le tariffe silenziosamente. Ti è arrivata una comunicazione che non hai letto, o peggio non ne hai ricevuta nessuna. Intanto paghi 10 euro in più ogni mese senza saperlo.</p>
+      <div class="fact">→ Il rincaro medio non comunicato è di 8-15 euro/mese</div>
+    </div>
+    <div class="problem-card reveal reveal-delay-2">
+      <div class="problem-card-num">02</div>
+      <h3>La portabilità ti spaventa<br>e resti fermo</h3>
+      <p>Hai sentito storie di chi è rimasto senza linea per giorni cambiando operatore. Allora rimandi, aspetti, e intanto continui a pagare un'offerta che non ti soddisfa.</p>
+      <div class="fact">→ La portabilità con Wind Tre avviene in poche ore, in automatico</div>
+    </div>
+    <div class="problem-card reveal reveal-delay-3">
+      <div class="problem-card-num">03</div>
+      <h3>Non sai mai cosa firmi<br>veramente</h3>
+      <p>Il contratto ha 12 pagine di condizioni. Il call center ti legge solo il prezzo promozionale. Poi scopri il costo a regime, i vincoli e i costi di recesso.</p>
+      <div class="fact">→ Da noi ogni voce viene spiegata prima di firmare qualsiasi cosa</div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:44px">
+    <a href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false" class="btn-quiz reveal">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      ⚡ Compila il quiz e trova la tua offerta
+    </a>
+  </div>
+</section>
+
+<!-- SOLUZIONE -->
+<section class="lc-section lc-soluzione">
+  <div class="soluzione-inner">
+    <div>
+      <span class="lc-tag reveal">La soluzione</span>
+      <h2 class="lc-title reveal">Un negozio vero.<br>Una persona vera.</h2>
+      <p class="lc-sub reveal">Sempre in Rete non è un sito dove clicchi e speri. È un negozio fisico a Vasto dove Andrea ti segue dall'inizio alla fine.</p>
+      <div class="soluzione-features">
+        <div class="feature-row reveal"><div class="feature-num">01</div><div class="feature-content"><h4>Analisi gratuita della tua offerta attuale</h4><p>Porti la tua bolletta o ci dici cosa hai. Andrea controlla se stai pagando il giusto, senza impegno.</p></div></div>
+        <div class="feature-row reveal"><div class="feature-num">02</div><div class="feature-content"><h4>Portabilità senza rischi e senza interruzioni</h4><p>Il numero vecchio non lo perdi. La linea non si interrompe. La portabilità avviene in automatico.</p></div></div>
+        <div class="feature-row reveal"><div class="feature-num">03</div><div class="feature-content"><h4>Tutto chiaro prima di firmare</h4><p>Nessuna sorpresa in bolletta. Ogni voce viene spiegata prima. Se non ti convince, non firmi.</p></div></div>
+        <div class="feature-row reveal"><div class="feature-num">04</div><div class="feature-content"><h4>Assistenza anche dopo l'attivazione</h4><p>Hai un problema con la SIM? Torni da noi o scrivi su WhatsApp. Non rimani mai da solo.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="soluzione-img reveal"><img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80" alt="Consulenza telefonica Vasto"></div>
+      <div class="value-card reveal">
+        <div class="value-card-title">Cosa ottieni</div>
+        <div class="value-card-sub">Incluso nella consulenza in negozio</div>
+        <ul>
+          <li>Analisi offerta attuale — gratuita e senza impegno</li>
+          <li>Confronto offerte disponibili per il tuo profilo</li>
+          <li>Attivazione SIM in negozio in 10 minuti</li>
+          <li>Portabilità gestita completamente da noi</li>
+          <li>Spiegazione voce per voce del contratto</li>
+          <li>Supporto post-attivazione via WhatsApp o in negozio</li>
+          <li>Consulenza fibra, FWA, Luce &amp; Gas su richiesta</li>
+        </ul>
+        <a href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false" class="btn-primary">👆 Torna su e compila il quiz</a>
+        <div class="guarantee">Nessun impegno. Nessun costo. Solo una chiacchierata.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COME FUNZIONA -->
+<section class="lc-section lc-come-funziona">
+  <div style="max-width:1100px;margin:0 auto">
+    <span class="lc-tag reveal" style="color:rgba(255,255,255,.5)">Come funziona</span>
+    <h2 class="lc-title reveal">3 passi.<br>E sei a posto.</h2>
+    <p class="lc-sub reveal">Niente attese infinite, niente moduli complicati. Dal primo contatto alla SIM attiva in meno di un'ora.</p>
+  </div>
+  <div class="steps-wrap">
+    <div class="step-item reveal">
+      <div class="step-num">01</div>
+      <span class="step-icon">💬</span>
+      <div class="step-title">Scrivimi su WhatsApp<br>o chiamami</div>
+      <p class="step-desc">Mandami un messaggio con la tua situazione attuale: quale operatore hai, quanto paghi, cosa ti serve. Ti rispondo personalmente in pochi minuti.</p>
+    </div>
+    <div class="step-item reveal reveal-delay-1">
+      <div class="step-num">02</div>
+      <span class="step-icon">🏪</span>
+      <div class="step-title">Vieni in negozio<br>con un documento</div>
+      <p class="step-desc">In Corso Mazzini 196 a Vasto. Nessun appuntamento obbligatorio. Bastano un documento d'identità e 10 minuti del tuo tempo.</p>
+    </div>
+    <div class="step-item reveal reveal-delay-2">
+      <div class="step-num">03</div>
+      <span class="step-icon">✅</span>
+      <div class="step-title">SIM attiva.<br>Sei a posto.</div>
+      <p class="step-desc">Esci dal negozio con la SIM già attiva e il numero portato. Se hai dubbi dopo, mi scrivi su WhatsApp. Non sparisco dopo la vendita.</p>
+      <div style="margin-top:14px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;color:var(--orange)">⚡ Sei Gigalizzato.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIANZE -->
+<section class="lc-section lc-testi">
+  <div style="max-width:1100px;margin:0 auto">
+    <span class="lc-tag reveal">Cosa dicono di noi</span>
+    <h2 class="lc-title reveal">Chi è venuto da noi<br>non torna indietro</h2>
+    <p class="lc-sub reveal">Persone reali di Vasto e dintorni che hanno smesso di perdere tempo con i call center.</p>
+  </div>
+  <div class="testi-grid reveal">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Pagavo 15 euro in più al mese senza motivo. Andrea ha controllato la mia bolletta in 5 minuti, mi ha fatto passare a un'offerta migliore e non ho perso il numero. Tutto in meno di un quarto d'ora."</p>
+      <div class="testi-author"><div class="testi-avatar">M</div><div><div class="testi-name">Marco R.</div><div class="testi-meta">Vasto · Padre di famiglia · Cliente da 2 anni</div></div></div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Avevo una paura tremenda di restare senza linea durante la portabilità. Invece non me ne sono neanche accorta: il giorno dopo avevo già Wind Tre attivo con il mio vecchio numero."</p>
+      <div class="testi-author"><div class="testi-avatar">G</div><div><div class="testi-name">Giulia F.</div><div class="testi-meta">San Salvo · Insegnante · Cliente da 1 anno</div></div></div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Finalmente qualcuno che ti spiega le cose come stanno, senza tecnicismi. Ho attivato 3 SIM per tutta la famiglia. Ogni volta che ho un dubbio passo da lui."</p>
+      <div class="testi-author"><div class="testi-avatar">R</div><div><div class="testi-name">Roberto C.</div><div class="testi-meta">Casalbordino · Artigiano · Cliente da 3 anni</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LUCE E GAS -->
+<section class="lc-section lc-lucegas" id="lucegasSection">
+  <div class="lg-inner">
+    <div>
+      <span class="lc-tag reveal" style="color:#4ECDC4">Luce &amp; Gas</span>
+      <h2 class="lc-title reveal">Non solo telefono.<br>Risparmia anche<br>in bolletta.</h2>
+      <p class="lc-sub reveal">Molti clienti di Vasto non sanno che da noi puoi gestire anche luce e gas. Abbinandoli al telefono, il risparmio medio supera i 200 euro all'anno.</p>
+      <div class="lg-saving-box reveal">
+        <div class="lg-saving-num">200€+</div>
+        <div class="lg-saving-label">risparmio medio annuo per chi abbina<br>luce &amp; gas al contratto telefonico</div>
+      </div>
+      <div class="lg-benefits reveal">
+        <div class="lg-benefit"><div class="lg-benefit-icon">⚡</div><div class="lg-benefit-content"><h4>Un solo interlocutore</h4><p>Telefono, fibra, luce e gas. Tutto gestito da Andrea in un unico posto. Niente call center separati.</p></div></div>
+        <div class="lg-benefit"><div class="lg-benefit-icon">📈</div><div class="lg-benefit-content"><h4>Prezzo bloccato 24 mesi</h4><p>Le nostre offerte energia hanno il contributo fisso bloccato per 2 anni. Nessuna sorpresa in bolletta.</p></div></div>
+        <div class="lg-benefit"><div class="lg-benefit-icon">📋</div><div class="lg-benefit-content"><h4>Analisi gratuita della bolletta</h4><p>Porti la tua bolletta attuale in negozio. Andrea la analizza e ti dice esattamente quanto puoi risparmiare.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="lg-card reveal">
+        <div class="lg-card-title"><span>⚡</span> Offerta Luce</div>
+        <ul>
+          <li>Prezzo indicizzato PUN — segue il mercato all'ingrosso</li>
+          <li>Contributo fisso annuo bloccato 24 mesi</li>
+          <li>Condizioni riservate ai clienti Wind Tre</li>
+          <li>Attivazione in negozio con la bolletta attuale</li>
+          <li>Nessuna interruzione della fornitura durante il cambio</li>
+        </ul>
+      </div>
+      <div class="lg-card reveal">
+        <div class="lg-card-title"><span>🔥</span> Offerta Gas</div>
+        <ul>
+          <li>Prezzo indicizzato PSV — mercato all'ingrosso</li>
+          <li>Contributo fisso annuo bloccato 24 mesi</li>
+          <li>Condizioni riservate ai clienti Wind Tre</li>
+          <li>Attivazione contestuale alla luce per massimo risparmio</li>
+          <li>Andrea ti spiega ogni voce prima di firmare qualsiasi cosa</li>
+        </ul>
+      </div>
+      <a href="https://wa.me/393931230333?text=Ciao%20Andrea%2C%20ho%20visto%20il%20sito%20e%20vorrei%20sapere%20quanto%20posso%20risparmiare%20su%20luce%20e%20gas!" class="lg-cta-btn reveal" target="_blank">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.557 4.125 1.529 5.858L.057 23.944l6.255-1.639A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+        Scopri quanto risparmi su luce &amp; gas
+      </a>
+      <div class="lg-note">Porta la tua bolletta attuale — Andrea la analizza gratis, senza impegno</div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="lc-section lc-faq">
+  <div style="max-width:1100px;margin:0 auto">
+    <span class="lc-tag reveal">Domande frequenti</span>
+    <h2 class="lc-title reveal">Tutto quello che<br>vuoi sapere</h2>
+  </div>
+  <div class="faq-wrap">
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Perdo il numero se cambio operatore? <span class="faq-icon">+</span></button><div class="faq-a"><p>No, assolutamente. La portabilità del numero è un diritto garantito dalla legge. Con Wind Tre il processo è automatico e avviene in poche ore, senza che tu debba fare nulla. Esci dal negozio con il tuo vecchio numero già attivo sulla nuova SIM.</p></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Quanto tempo ci vuole per attivare una nuova SIM? <span class="faq-icon">+</span></button><div class="faq-a"><p>In media 10-15 minuti in negozio. Bastano un documento d'identità valido e il codice fiscale. Se devi portare il numero da un altro operatore, la portabilità avviene entro poche ore dalla firma del contratto.</p></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">La consulenza è davvero gratuita? <span class="faq-icon">+</span></button><div class="faq-a"><p>Sì, completamente. Puoi venire in negozio, mostrarci la tua bolletta attuale e chiedere un confronto con le offerte Wind Tre senza nessun impegno. Se non ti convince nessuna soluzione, non firmi nulla e non devi niente.</p></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Fate anche fibra e internet casa? <span class="faq-icon">+</span></button><div class="faq-a"><p>Sì. Gestiamo attivazioni di fibra FTTH (fino a 2.5 Gbps), FWA (internet senza cavo tramite antenna 5G) e linee fisse. Possiamo anche abbinare SIM mobile e fibra con offerte bundle vantaggiose.</p></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Cosa succede se ho un problema dopo l'attivazione? <span class="faq-icon">+</span></button><div class="faq-a"><p>Puoi tornare in negozio o scriverci su WhatsApp al +39 393 123 0333. Andrea segue personalmente tutti i clienti anche dopo la firma. Non sei solo con un numero verde da chiamare.</p></div></div>
+  </div>
+</section>
+
+<!-- CTA FINALE -->
+<section class="lc-section lc-cta" id="contattaci">
+  <div style="position:relative;z-index:2">
+    <h2 class="lc-title">Pronto a smettere<br>di pagare troppo?</h2>
+    <p class="lc-cta-sub">Contatta Andrea oggi. La consulenza è gratuita, l'attivazione dura 10 minuti, e puoi portare il tuo vecchio numero senza nessun rischio.</p>
+    <div class="cta-buttons">
+      <a href="https://wa.me/393931230333" target="_blank" class="btn-wa">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.557 4.125 1.529 5.858L.057 23.944l6.255-1.639A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+        Scrivimi su WhatsApp
+      </a>
+      <a href="tel:+393931230333" class="btn-call">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        Chiama ora
+      </a>
+    </div>
+    <div class="cta-reassure">
+      <span class="reassure-item">Risposta entro poche ore</span>
+      <span class="reassure-item">Consulenza gratuita</span>
+      <span class="reassure-item">Nessuna pressione</span>
+      <span class="reassure-item">Negozio fisico a Vasto</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="lc-footer">
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand-name">Sempre in <span>Rete</span></div>
+      <p class="footer-payoff">Partner ufficiale Wind Tre a Vasto. SIM, fibra, luce &amp; gas. Andrea risponde personalmente a ogni richiesta.</p>
+    </div>
+    <div class="footer-info">
+      <h4>Informazioni</h4>
+      <ul>
+        <li>📍 Corso Mazzini, 196 — 66054 Vasto (CH)</li>
+        <li>📞 +39 393 123 0333</li>
+        <li>💬 WhatsApp: +39 393 123 0333</li>
+        <li>🕐 Lun–Sab 9:30–13:00 / 16:30–20:00</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 Sempre in Rete di Andrea Di Domenico. Tutti i diritti riservati.</div>
+    <div class="footer-links"><a href="#">Privacy Policy</a><a href="#">Cookie Policy</a></div>
+  </div>
+</footer>
+
+</div><!-- /landing-content -->
+
+<script>
+var SHEET_WEBHOOK_URL='https://script.google.com/macros/s/AKfycbw5f3e3Vnk2IoUbrb9at4yh_wWlAGmj4VACIMqAzo5ijl_utBp7mMlgEItNNSPPeHOF4Q/exec';
+var isDesktop=window.innerWidth>=900;
+var VA_CLIPS={V0:{start:0,duration:15.933},V0b:{start:15.933,duration:11.833},V1:{start:27.766,duration:12.367},V2a:{start:40.133,duration:15.800},V2b:{start:55.933,duration:16.600},V3:{start:72.533,duration:10.333},V4:{start:82.866,duration:16.933},V5:{start:99.799,duration:19.967},V5b:{start:119.766,duration:16.400}};
+var VA_FLOW={V0:{label:'Benvenuto',btns:[{text:'Inizia →',next:'V0b',v:'',lbl:''}]},V0b:{label:'Chi sei?',form:true},V0c:{label:'1 di 6',noVideo:true,question:'Da quale operatore vieni?',btns:[{text:'TIM',next:'V0d',v:'TIM',lbl:'TIM'},{text:'Vodafone',next:'V0d',v:'Vodafone',lbl:'Vodafone'},{text:'Iliad',next:'V0d',v:'Iliad',lbl:'Iliad'},{text:'Fastweb',next:'V0d',v:'Fastweb',lbl:'Fastweb'},{text:'PosteMobile',next:'V0d',v:'PosteMobile',lbl:'PosteMobile'},{text:'ho. Mobile',next:'V0d',v:'ho.',lbl:'ho. Mobile'},{text:'Altro / non ricordo',next:'V0d',v:'Altro',lbl:'Altro'}]},V0d:{label:'2 di 6',noVideo:true,question:'Quanto paghi adesso al mese?',btns:[{text:'Meno di 10€',next:'V1',v:'<10',lbl:'meno di 10€/mese'},{text:'Tra 10€ e 15€',next:'V1',v:'10-15',lbl:'10-15€/mese'},{text:'Tra 15€ e 25€',next:'V1',v:'15-25',lbl:'15-25€/mese'},{text:'Tra 25€ e 40€',next:'V1',v:'25-40',lbl:'25-40€/mese'},{text:'Più di 40€',next:'V1',v:'>40',lbl:'oltre 40€/mese'},{text:'Non lo so',next:'V1',v:'?',lbl:'non sa quanto paga'}]},V1:{label:'3 di 6',btns:[{text:'Pochi GB — solo WhatsApp e foto',next:'V2a',v:'low',lbl:'pochi GB'},{text:'Uso normale — social, musica, mappe',next:'V2a',v:'med',lbl:'uso normale'},{text:'Tanto — video, streaming, lavoro',next:'V2b',v:'high',lbl:'tanto'},{text:'Voglio illimitato',next:'V2b',v:'unlimited',lbl:'giga illimitati'}]},V2a:{label:'4 di 6',btns:[{text:'Solo SIM — il WiFi ce l\'ho',next:'V3',v:'no',lbl:'solo SIM'},{text:'Voglio anche la fibra a casa',next:'V3',v:'fibra',lbl:'fibra a casa'},{text:'Internet casa senza cavo (FWA/5G)',next:'V3',v:'fwa',lbl:'FWA/5G'}]},V2b:{label:'4 di 6',btns:[{text:'Solo SIM — il WiFi ce l\'ho',next:'V3',v:'no',lbl:'solo SIM'},{text:'Voglio anche la fibra a casa',next:'V3',v:'fibra',lbl:'fibra a casa'},{text:'Internet casa senza cavo (FWA/5G)',next:'V3',v:'fwa',lbl:'FWA/5G'}]},V3:{label:'5 di 6',btns:[{text:'Solo per me',next:'V4',v:'1',lbl:'una SIM'},{text:'Io + famiglia (2 o più SIM)',next:'V4',v:'family',lbl:'famiglia'},{text:'Ho una partita IVA / azienda',next:'V5b',v:'biz',lbl:'business'}]},V4:{label:'6 di 6',btns:[{text:'⚡ Sì, mi interessa anche luce e gas',next:'V5',v:'lg_yes',lbl:'luce e gas'},{text:'Per ora solo il telefono',next:'V5',v:'lg_no',lbl:'solo telefono'}]},V5:{label:'Quasi finito!',result:true,biz:false},V5b:{label:'Quasi finito!',result:true,biz:true}};
+var VA_OFFERS={low:{name:'Easy GO',desc:'Minuti illimitati + GB per uso leggero. Qualità Wind Tre senza spendere troppo.'},med:{name:'GO 100 Special',desc:'100 GB in 4G/5G con minuti illimitati. Il giusto equilibrio per uso quotidiano.'},high:{name:'GO 150 Fire+',desc:'150 GB in 5G, minuti illimitati, Amazon Prime 12 mesi incluso.'},unlimited:{name:'GO Unlimited Star+',desc:'Giga illimitati in 5G. Zero limiti, massima libertà.'},fibra:{name:'Super Fibra + SIM',desc:'Fibra FTTH fino a 2.5 Gbps a casa + SIM mobile inclusa.'},fwa:{name:'Super Internet Casa 5G',desc:'Internet veloce a casa senza cavo tramite antenna 5G.'},biz:{name:'Business Wind Tre',desc:'Offerte dedicate alle aziende. Andrea ti contatta per la soluzione migliore.'}};
+var vaS={step:'V0',nome:'',phone:'',zona:'',a:{},lgInt:false,history:[],_resultShown:false};
+var vaIsPaused=false,vaProgressInt=null,vaVid=null,vaPlayerReady=false,vaPendingLoad=null;
+(function(){vaVid=document.getElementById('vaVideo');if(!vaVid)return;function r(){if(vaPlayerReady)return;vaPlayerReady=true;if(vaPendingLoad){var p=vaPendingLoad;vaPendingLoad=null;vaPlayerLoadVideo(p.key,p.autoplay);}}vaVid.addEventListener('loadedmetadata',r,{once:true});vaVid.addEventListener('canplay',r,{once:true});if(vaVid.readyState>=1)r();vaVid.muted=true;try{vaVid.play().catch(function(){});}catch(e){}if(isDesktop){document.getElementById('vaPanelDesk').style.display='flex';}})();
+function vaPlayerLoadVideo(key,autoplay){var clip=VA_CLIPS[key];if(!clip||!vaVid)return;if(!vaPlayerReady){vaPendingLoad={key:key,autoplay:autoplay};return;}var seek=Math.max(0,clip.start-0.2);try{if(autoplay){var p=vaVid.play();if(p&&typeof p.then==='function')p.then(function(){try{vaVid.currentTime=seek;}catch(e){}}).catch(function(){try{vaVid.currentTime=seek;}catch(e){}});else vaVid.currentTime=seek;}else vaVid.currentTime=seek;}catch(e){}}
+function vaStartPlayer(){if(vaVid){vaVid.muted=true;try{vaVid.play().catch(function(){});}catch(e){}}document.getElementById('vaPlayScreen').style.display='none';vaIsPaused=false;document.getElementById('vaMuteOverlay').style.display='flex';vaLoad('V0',false);document.getElementById('vaPauseBtn').style.display='flex';}
+function vaTogglePlay(){if(document.getElementById('vaPlayScreen').style.display!=='none')return;if(vaS._currentStep&&vaS._currentStep.noVideo)return;if(vaIsPaused){vaVid&&vaVid.play().catch(function(){});vaIsPaused=false;document.getElementById('vaPausedOverlay').style.display='none';document.getElementById('vaPauseIcon').innerHTML='<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';vaStartProgress(vaS._currentKey);}else{vaVid&&vaVid.pause();vaIsPaused=true;document.getElementById('vaPausedOverlay').style.display='flex';document.getElementById('vaPauseIcon').innerHTML='<path d="M8 5v14l11-7z"/>';if(vaProgressInt){clearInterval(vaProgressInt);vaProgressInt=null;}}}
+function vaUnmute(){document.getElementById('vaMuteOverlay').style.display='none';if(vaVid){vaVid.muted=false;vaVid.volume=1;vaVid.play().catch(function(){});}}
+function vaLoad(key,skipVideoLoad){var step=VA_FLOW[key];if(!step)return;vaS.step=key;vaS._currentKey=key;vaS._currentStep=step;['vaBtns','vaForm','vaResult','vaBtnsD','vaFormD','vaResultD'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});var dt=document.getElementById('deskTestis');if(dt)dt.style.display='';document.getElementById('vaStepLabel').textContent=step.label;document.getElementById('vaBackBtn').style.display=vaS.history.length>0?'block':'none';document.getElementById('vaPauseBtn').style.display=(step.result||step.noVideo)?'none':'flex';vaIsPaused=false;document.getElementById('vaPausedOverlay').style.display='none';document.getElementById('vaPauseIcon').innerHTML='<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';document.getElementById('vaProgressBar').style.width='0%';if(!skipVideoLoad&&VA_CLIPS[key]&&!step.noVideo)vaPlayerLoadVideo(key,true);if(key==='V0'){vaStartProgress('V0');return;}if(step.result){vaShowResult(step.biz);return;}if(step.noVideo){vaVid&&vaVid.pause();if(step.form)vaShowForm();else if(step.btns)vaShowBtns(step);return;}vaStartProgress(key);}
+function vaStartProgress(key){if(vaProgressInt){clearInterval(vaProgressInt);vaProgressInt=null;}var clip=VA_CLIPS[key];if(!clip)return;var bAt=clip.start+clip.duration-0.5,pAt=clip.start+clip.duration,fbS=Date.now(),fired={b:false,p:false};vaProgressInt=setInterval(function(){if(vaIsPaused){fbS+=150;return;}var t=null;try{if(vaVid)t=vaVid.currentTime;}catch(e){}var hb,hp;if(typeof t==='number'&&!isNaN(t)&&t>0){hb=t>=bAt;hp=t>=pAt;document.getElementById('vaProgressBar').style.width=Math.min(100,Math.max(0,(t-clip.start)/clip.duration*100))+'%';}else{var el=Date.now()-fbS;hb=el>=(clip.duration-.5)*1000;hp=el>=clip.duration*1000;document.getElementById('vaProgressBar').style.width=Math.min(100,el/clip.duration/10)+'%';}if(!fired.b&&hb){fired.b=true;vaOnEnded();}if(!fired.p&&hp){fired.p=true;vaVid&&vaVid.pause();clearInterval(vaProgressInt);vaProgressInt=null;}},150);}
+function vaShowBtns(step){var q=step.question||'Scegli la tua risposta';var html='<div class="va-q-title">'+q+'</div><div class="va-q-sub">Tap su una risposta per continuare →</div>'+step.btns.map(function(b,i){return'<button class="va-btn" onclick="vaPick('+i+')"><span class="va-btn-num">'+(i+1)+'</span>'+b.text+'</button>';}).join('');var id=isDesktop?'vaBtnsD':'vaBtns';document.getElementById(id).innerHTML=html;document.getElementById(id).style.display='flex';}
+function vaShowForm(){document.getElementById(isDesktop?'vaFormD':'vaForm').style.display='flex';}
+function vaOnEnded(){var step=vaS._currentStep;if(!step)return;if(step.result)vaShowResult(step.biz);else if(step.form)vaShowForm();else if(step.btns)vaShowBtns(step);}
+function vaPick(i){var step=VA_FLOW[vaS.step],btn=step.btns[i];vaS.a[vaS.step]=btn.v;if(vaS.step==='V0c')vaS.operatore=btn.v;if(vaS.step==='V0d')vaS.costo=btn.v;if(btn.v==='lg_yes')vaS.lgInt=true;vaS.history.push(vaS.step);vaLoad(btn.next);}
+function vaBack(){if(!vaS.history.length)return;var prev=vaS.history.pop();delete vaS.a[vaS.step];vaLoad(prev);}
+function vaOnZonaChange(){var s=document.getElementById('vaZona'),a=document.getElementById('vaZonaAltro');a.style.display=s.value==='__altro'?'block':'none';if(s.value!=='__altro')a.value='';vaCheckForm();}
+function vaCheckForm(){var n=document.getElementById('vaName').value.trim(),p=document.getElementById('vaPhone').value.trim(),z=document.getElementById('vaZona').value,za=document.getElementById('vaZonaAltro').value.trim(),ok=n.length>1&&p.length>6&&z&&(z!=='__altro'||za.length>1),btn=document.getElementById('vaFormBtn');btn.disabled=!ok;btn.style.background=ok?'var(--orange)':'rgba(232,84,30,.25)';btn.style.color=ok?'#fff':'rgba(255,255,255,.35)';btn.style.cursor=ok?'pointer':'not-allowed';}
+function vaSubmitForm(){vaS.nome=document.getElementById('vaName').value.trim();vaS.phone=document.getElementById('vaPhone').value.trim();var z=document.getElementById('vaZona').value;vaS.zona=z==='__altro'?document.getElementById('vaZonaAltro').value.trim():z;document.getElementById('vaForm').style.display='none';vaS.history.push('V0b');vaLoad('V0c');}
+function vaOnZonaChangeD(){var s=document.getElementById('vaZonaD'),a=document.getElementById('vaZonaAltroD');a.style.display=s.value==='__altro'?'block':'none';if(s.value!=='__altro')a.value='';vaCheckFormD();}
+function vaCheckFormD(){var n=document.getElementById('vaNameD').value.trim(),p=document.getElementById('vaPhoneD').value.trim(),z=document.getElementById('vaZonaD').value,za=document.getElementById('vaZonaAltroD').value.trim(),ok=n.length>1&&p.length>6&&z&&(z!=='__altro'||za.length>1),btn=document.getElementById('vaFormBtnD');btn.disabled=!ok;btn.style.background=ok?'var(--orange)':'rgba(232,84,30,.25)';btn.style.color=ok?'#fff':'rgba(255,255,255,.35)';btn.style.cursor=ok?'pointer':'not-allowed';}
+function vaSubmitFormD(){vaS.nome=document.getElementById('vaNameD').value.trim();vaS.phone=document.getElementById('vaPhoneD').value.trim();var z=document.getElementById('vaZonaD').value;vaS.zona=z==='__altro'?document.getElementById('vaZonaAltroD').value.trim():z;document.getElementById('vaFormD').style.display='none';vaS.history.push('V0b');vaLoad('V0c');}
+function vaGetOffer(){if(vaS.a.V3==='biz')return VA_OFFERS.biz;if(vaS.a.V2a==='fibra'||vaS.a.V2b==='fibra')return VA_OFFERS.fibra;if(vaS.a.V2a==='fwa'||vaS.a.V2b==='fwa')return VA_OFFERS.fwa;return VA_OFFERS[vaS.a.V1]||VA_OFFERS.med;}
+function vaShowResult(isBiz){if(vaS._resultShown)return;vaS._resultShown=true;var offer=vaGetOffer(),g='Perfetto <strong style="color:#fff">'+vaS.nome+'</strong>! In base a quello che ci hai detto:';if(isDesktop){document.getElementById('vaResultGreetingD').innerHTML=g;document.getElementById('vaResultOfferD').textContent=offer.name;document.getElementById('vaResultDescD').textContent=offer.desc;document.getElementById('vaResultD').style.display='flex';var dt=document.getElementById('deskTestis');if(dt)dt.style.display='none';}else{document.getElementById('vaResultGreeting').innerHTML=g;document.getElementById('vaResultOffer').textContent=offer.name;document.getElementById('vaResultDesc').textContent=offer.desc;document.getElementById('vaResult').style.display='flex';}vaSendToCRM(offer,isBiz);}
+function vaSendToCRM(offer,isBiz){if(!SHEET_WEBHOOK_URL||SHEET_WEBHOOK_URL.indexOf('http')<0)return;var v0c=vaS.a.V0c?VA_FLOW.V0c.btns.find(function(b){return b.v===vaS.a.V0c;}):null,v0d=vaS.a.V0d?VA_FLOW.V0d.btns.find(function(b){return b.v===vaS.a.V0d;}):null,v1=vaS.a.V1?VA_FLOW.V1.btns.find(function(b){return b.v===vaS.a.V1;}):null,v2k=vaS.a.V2a?'V2a':(vaS.a.V2b?'V2b':null),v2=v2k?VA_FLOW[v2k].btns.find(function(b){return b.v===vaS.a[v2k];}):null;fetch(SHEET_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({nome:vaS.nome,telefono:vaS.phone,zona:vaS.zona,operatore:v0c?v0c.lbl:'',costoAttuale:v0d?v0d.lbl:'',utilizzo:v1?v1.lbl:'',connessione:v2?v2.lbl:'',sim:vaS.a.V3||'',lucegas:vaS.lgInt?'Sì':'No',tipo:isBiz?'Business':'Privato',offertaConsigliata:offer.name,fonte:'Landing VideoAsk',timestamp:new Date().toISOString()})}).catch(function(){});}
+function vaReset(){vaS={step:'V0',nome:'',phone:'',zona:'',a:{},lgInt:false,history:[],_resultShown:false};vaIsPaused=false;if(vaProgressInt){clearInterval(vaProgressInt);vaProgressInt=null;}['vaBtns','vaForm','vaResult','vaBtnsD','vaFormD','vaResultD'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});document.getElementById('vaBackBtn').style.display='none';document.getElementById('vaPauseBtn').style.display='none';document.getElementById('vaMuteOverlay').style.display='none';document.getElementById('vaPausedOverlay').style.display='none';document.getElementById('vaProgressBar').style.width='0%';['vaName','vaPhone','vaNameD','vaPhoneD'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});['vaZona','vaZonaD'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});['vaZonaAltro','vaZonaAltroD'].forEach(function(id){var el=document.getElementById(id);if(el){el.value='';el.style.display='none';}});vaCheckForm();vaCheckFormD();var dt=document.getElementById('deskTestis');if(dt)dt.style.display='';if(vaVid){try{vaVid.pause();vaVid.currentTime=0;vaVid.muted=true;}catch(e){}}document.getElementById('vaPlayScreen').style.display='flex';}
+
+// Reveal on scroll
+var revealObs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target);}});},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(function(el){revealObs.observe(el);});
+
+// Floating quiz button: show after scrolling past video
+window.addEventListener('scroll',function(){
+  var fq=document.getElementById('floatingQuiz');
+  if(!fq) return;
+  var threshold=window.innerHeight*0.8;
+  if(window.scrollY>threshold) fq.classList.add('visible');
+  else fq.classList.remove('visible');
+},{passive:true});
+
+// FAQ
+function toggleFaq(btn){
+  var allBtns=document.querySelectorAll('.faq-q'),allAnswers=document.querySelectorAll('.faq-a');
+  allBtns.forEach(function(b,i){if(b!==btn){b.classList.remove('open');allAnswers[i].classList.remove('open');}});
+  var idx=Array.prototype.indexOf.call(allBtns,btn);
+  btn.classList.toggle('open');allAnswers[idx].classList.toggle('open');
+}
+</script>
+</body>
+</html>
